@@ -33,9 +33,13 @@
         <DebugType>portable</DebugType>
         <DefineConstants>$(DefineConstants);TRACE;_BINDING_;</DefineConstants>
         <EnableDefaultItems>false</EnableDefaultItems>
+        <MavenGroupId>com.google.code.gson</MavenGroupId>
+        <MavenArtifactId>gson</MavenArtifactId>
+        <MavenArtifactVersion>2.8.6</MavenArtifactVersion>
+        <NugetPackageId>Xamarin.Android.Google.Code.Gson</NugetPackageId>
     </PropertyGroup>
     <PropertyGroup>
-        <PackageId>Xamarin.Android.Google.Code.Gson</PackageId>
+        <PackageId>$(NugetPackageId)</PackageId>
         <Title>A Xamarin binding for Google's Android library "Gson"</Title>
         <Summary>A Xamarin binding for Google's Android library "Gson"</Summary>
         <Description>A Xamarin binding for Google's Android library "Gson"</Description>
@@ -47,7 +51,7 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageProjectUrl>https://github.com/AmrAlSayed0/Xamarin.Android.Google.Code.Gson</PackageProjectUrl>
         <RepositoryUrl>https://github.com/AmrAlSayed0/Xamarin.Android.Google.Code.Gson</RepositoryUrl>
-        <PackageVersion>2.8.6.1</PackageVersion>
+        <PackageVersion>$(MavenArtifactVersion).2</PackageVersion>
         <RepositoryType>git</RepositoryType>
         <!-- Include symbol files (*.pdb) in the built .nupkg -->
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
@@ -64,6 +68,7 @@
         <OutputPath>bin\Release\</OutputPath>
         <DefineConstants>$(DefineConstants);RELEASE;</DefineConstants>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <AndroidJavadocVerbosity>full</AndroidJavadocVerbosity>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Mono.Android" />
@@ -73,32 +78,46 @@
         <Compile Include="Additions\**\*.cs" />
     </ItemGroup>
     <ItemGroup>
+        <!-- Includes the -javadoc jar to generate documentation. This property is now deprecated. -->
         <!--
-        <JavaDocJar Include="Jars\JavaDocJars\com.google.code.gson.gson-2.8.6-javadoc.jar" />
+        <JavaDocJar Include="Jars\JavaDocJars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion)-javadoc.jar"
+                    Condition="Exists('Jars\JavaDocJars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion)-javadoc.jar')" />
         -->
-        <JavaSourceJar Include="Jars\JavaSourcesJars\com.google.code.gson.gson-2.8.6-sources.jar" />
-        <InputJar Include="Jars\com.google.code.gson.gson-2.8.6.jar" />
-        <!-- For those artifacts with lib/ folder -->
-        <InputJar Include="Jars\gson\libs\*.jar"
-                  Condition="Exists('Jars\gson\libs\')" />
-        <None Include="Jars\com.google.code.gson.gson-2.8.6.jar"
+        <!-- Includes the -sources jar to generate documentation. -->
+        <JavaSourceJar Include="Jars\JavaSourcesJars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion)-sources.jar"
+                       Condition="Exists('Jars\JavaSourcesJars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion)-sources.jar')" />
+        <!-- Add the jar as the main source of binding, if it exists. This is mainly for libraries distributed as jar files -->
+        <InputJar Include="Jars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion).jar"
+                  Condition="Exists('Jars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion).jar')" />
+        <!-- Add the extracted jars as the main source of binding, if it exists. This is mainly for libraries distributed as aar files -->
+        <!-- The aar files needs to be extracted to a folder named the same name as the maven artifact ID. -->
+        <InputJar Include="Jars\$(MavenArtifactId)\classes.jar"
+                  Condition="Exists('Jars\$(MavenArtifactId)\classes.jar')" />
+        <InputJar Include="Jars\$(MavenArtifactId)\libs\*.jar"
+                  Condition="Exists('Jars\$(MavenArtifactId)\libs\')" />
+        <!-- Packs the jar or aar file into the nuget package. -->
+        <None Include="Jars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion).jar"
+              Condition="Exists('Jars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion).jar')"
               Pack="True"
-              PackagePath="jar\com.google.code.gson.gson.jar" />
+              PackagePath="jar\$(MavenGroupId).$(MavenArtifactId).jar" />
+        <None Include="Jars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion).aar"
+              Condition="Exists('Jars\$(MavenGroupId).$(MavenArtifactId)-$(MavenArtifactVersion).aar')"
+              Pack="True"
+              PackagePath="aar\$(MavenGroupId).$(MavenArtifactId).aar" />
     </ItemGroup>
     <ItemGroup>
-        <None Include="Xamarin.Android.Google.Code.Gson.targets"
+        <None Include="$(NugetPackageId).targets"
               Pack="True"
-              PackagePath="build\$(TargetFramework)" />
-        <None Include="Xamarin.Android.Google.Code.Gson.targets"
+              PackagePath="build" />
+        <None Include="$(NugetPackageId).targets"
               Pack="True"
-              PackagePath="buildTransitive\$(TargetFramework)" />
+              PackagePath="buildTransitive" />
     </ItemGroup>
     <ItemGroup>
-        <!--
-        <None Include="Jars\gson\proguard.txt"
+        <None Include="Jars\$(MavenArtifactId)\proguard.txt"
+              Condition="Exists('Jars\$(MavenArtifactId)\proguard.txt')"
               Pack="True"
               PackagePath="proguard\" />
-        -->
     </ItemGroup>
     <ItemGroup>
         <TransformFile Include="Transforms\*.xml" />
