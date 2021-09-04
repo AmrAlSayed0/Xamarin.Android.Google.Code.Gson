@@ -35,7 +35,7 @@
         <EnableDefaultItems>false</EnableDefaultItems>
         <MavenGroupId>com.google.code.gson</MavenGroupId>
         <MavenArtifactId>gson</MavenArtifactId>
-        <MavenArtifactVersion>2.8.7</MavenArtifactVersion>
+        <MavenArtifactVersion>2.8.8</MavenArtifactVersion>
         <NugetPackageId>Xamarin.Android.Google.Code.Gson</NugetPackageId>
     </PropertyGroup>
     <PropertyGroup>
